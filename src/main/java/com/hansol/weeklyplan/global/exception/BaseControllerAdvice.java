@@ -29,7 +29,7 @@ import com.hansol.weeklyplan.global.response.BaseResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RestControllerAdvice(basePackages = "com.hansol.timereport")
+@RestControllerAdvice(basePackages = "com.hansol.weeklyplan")
 public class BaseControllerAdvice {
 
     // 500번대 에러처리
