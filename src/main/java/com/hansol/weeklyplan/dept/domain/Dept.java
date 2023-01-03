@@ -1,8 +1,17 @@
 package com.hansol.weeklyplan.dept.domain;
 
+import lombok.Builder;
+import lombok.Getter;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 
-@Entity(name = "dept")
+@Getter
+@DynamicInsert	// DB 기본값 적용
+@DynamicUpdate
+@Entity
+@Table(name = "dept")
 public class Dept {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,10 +29,13 @@ public class Dept {
 	@Column(name = "is_deleted")
 	private Boolean isDeleted;
 
+	protected Dept() {
+	}
 
-
-
-
-
-
+	@Builder
+	public Dept(String name, Integer level, Integer parentId) {
+		this.name = name;
+		this.level = level;
+		this.parentId = parentId;
+	}
 }

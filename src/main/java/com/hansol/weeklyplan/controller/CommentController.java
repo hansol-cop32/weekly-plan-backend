@@ -1,4 +1,4 @@
-package com.hansol.weeklyplan.comment;
+package com.hansol.weeklyplan.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

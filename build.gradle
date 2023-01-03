@@ -2,11 +2,15 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.5'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	//querydsl start
+	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+	//querydsl end
 }
 
 group = 'com.hansol'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
+def querydslVersion = '5.0.0'
 
 configurations {
 	compileOnly {
@@ -19,26 +23,114 @@ repositories {
 }
 
 dependencies {
+	// spring batch
 	implementation 'org.springframework.boot:spring-boot-starter-batch'
+
+	// spring data jpa
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	//	implementation 'org.springframework.session:spring-session-data-redis'	// session
+
+
+	// spring security
 	//	implementation 'org.springframework.boot:spring-boot-starter-security'
 	//	testImplementation 'org.springframework.security:spring-security-test'
+
+	// bean validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// configuration properties
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+	// spring mvc (basic)
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
+
+
+	// db
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'	// maria
+	runtimeOnly('mysql:mysql-connector-java') //mysql8
+
+	// spring-test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.batch:spring-batch-test'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 
-	//mysql local
-	runtimeOnly('mysql:mysql-connector-java') //mysql8
+	// spring devtools
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	implementation('org.springframework.boot:spring-boot-devtools')
+
+	// JWT
+	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.2'
+
+	// p6spy
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter'
+
+	// querydsl
+	implementation group: 'com.querydsl', name: 'querydsl-jpa', version: querydslVersion
+	implementation group: 'com.querydsl', name: 'querydsl-apt', version: querydslVersion
+	implementation group: 'com.querydsl', name: 'querydsl-core', version: querydslVersion
+
+	// spring retry
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.retry:spring-retry'
+	implementation 'org.springframework:spring-aspects'
+
+	// spring aop
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
 
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+
+// Intellij
+def querydslDir =  "src/main/generated"
+
+querydsl {
+	library = "com.querydsl:querydsl-apt"
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+	main.java.srcDir querydslDir
+}
+
+//컴파일 클래스 패스에 넣음.
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+	querydsl.extendsFrom compileClasspath
+}
+
+//어노테이션 프로세서와 맞물려서 빌드시 생성
+compileQuerydsl {
+	options.annotationProcessorPath = configurations.querydsl
+}
+tasks.withType(JavaCompile).configureEach {
+	options.fork = true
+	options.incremental = true
+	javaCompiler = javaToolchains.compilerFor {
+		languageVersion = JavaLanguageVersion.of(11)
+	}
+}
+bootJar {
+	archiveName 'weeklyplan.jar'
+	mainClass = 'com.hansol.weeklyplan.WeeklyPlanApplication'
+}
+
+clean {
+    delete file(querydslDir) // 인텔리제이 Annotation processor 생성물 생성위치
+}
+
+task cleanGeneatedDir(type: Delete) { // 인텔리제이 annotation processor 가 생성한 Q클래스가 clean 태스크로 삭제되는 게 불편하다면 둘 중에 하나를 선택
+    delete file(querydslDir)
 }
