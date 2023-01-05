@@ -1,55 +1,81 @@
-CREATE TABLE `member` (
-                          `id`	INT UNSIGNED	NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                          `position_id`	INT UNSIGNED	NOT NULL,
-                          `dept_id`	INT UNSIGNED	NOT NULL,
-                          `emp_id`	VARCHAR(15)	NOT NULL,
-                          `name`	VARCHAR(50)	NOT NULL,
-                          `password`	TEXT	NOT NULL,
-                          `created_at`	DATE	NOT NULL,
-                          `updated_at`	DATE	NULL
+create table member
+(
+    id          int unsigned auto_increment primary key,
+    position_id int unsigned         not null,
+    dept_id     int unsigned         not null,
+    emp_id      varchar(15)          not null,
+    name        varchar(50)          not null,
+    password    text                 not null,
+    created_at  date                 not null,
+    updated_at  date                 null,
+    is_deleted  tinyint(1) default 0 null,
+    constraint FK_dept_TO_member_1
+        foreign key (dept_id) references dept (id),
+    constraint FK_position_TO_member_1
+        foreign key (position_id) references position (id)
 );
 
-CREATE TABLE `task` (
-                        `id`	INT UNSIGNED	NOT NULL AUTO_INCREMENT primary key ,
-                        `member_id`	INT UNSIGNED	NOT NULL,
-                        `content`	TEXT	NULL,
-                        `created_at`	DATE	NOT NULL,
-                        `updated_at`	DATE	NULL,
-                        `is_done`	TINYINT(1)	NOT NULL	DEFAULT false,
-                        `is_deleted`	TINYINT(1)	NOT NULL	DEFAULT false
+
+create table task
+(
+    id         int unsigned auto_increment
+        primary key,
+    member_id  int unsigned         not null,
+    content    text                 null,
+    created_at date                 not null,
+    updated_at date                 null,
+    is_done    tinyint(1) default 0 not null,
+    is_deleted tinyint(1) default 0 not null,
+    constraint FK_member_TO_task_1
+        foreign key (member_id) references member (id)
 );
 
-CREATE TABLE `comment` (
-                           `id`	INT UNSIGNED	NOT NULL AUTO_INCREMENT primary key ,
-                           `member_id`	INT UNSIGNED	NOT NULL,
-                           `task_id`	INT UNSIGNED	NOT NULL,
-                           `content`	TEXT	NOT NULL,
-                           `created_at`	DATE	NOT NULL,
-                           `updated_at`	DATE	NULL,
-                           `is_deleted`	TINYINT(1)	NOT NULL	DEFAULT false
+
+
+create table comment
+(
+    id         int unsigned auto_increment      primary key,
+    member_id  int unsigned                     not null,
+    task_id    int unsigned                     not null,
+    content    text                             not null,
+    created_at date                             not null,
+    updated_at date                             null,
+    is_deleted tinyint(1)   default 0           not null,
+    level      tinyint                          not null,
+    parent_id  int unsigned default '0'         not null,
+    constraint FK_member_TO_comment_1
+        foreign key (member_id) references member (id),
+    constraint FK_task_TO_comment_1
+        foreign key (task_id) references task (id)
 );
 
-# CREATE TABLE `dining` (
-#
-# );
 
-CREATE TABLE `position` (
-                            `id` INT UNSIGNED	NOT NULL AUTO_INCREMENT primary key,
-                            `name`	VARCHAR(50)	NOT NULL,
-                            `is_deleted`	TINYINT(1)	NOT NULL	DEFAULT false,
-                            `created_at`	DATE	NOT NULL,
-                            `updated_at`	DATE	NULL
+
+
+
+create table position
+(
+    id         int unsigned auto_increment primary key,
+    name       varchar(50)          not null,
+    is_deleted tinyint(1) default 0 not null,
+    created_at date                 not null,
+    updated_at date                 null
 );
 
-CREATE TABLE `dept` (
-                        `id`	INT UNSIGNED	NOT NULL AUTO_INCREMENT primary key ,
-                        `name`	VARCHAR(50)	NOT NULL,
-                        `level`	TINYINT	NOT NULL,
-                        `parent_id`	INT UNSIGNED	NOT NULL,
-                        `is_deleted`	TINYINT(1)	NOT NULL	DEFAULT false,
-                        `created_at`	DATE	NOT NULL,
-                        `updated_at`	DATE	NULL
+
+
+create table dept
+(
+    id         int unsigned auto_increment primary key,
+    name       varchar(50)              not null,
+    level      tinyint                  not null,
+    parent_id  int unsigned default '0' not null,
+    is_deleted tinyint(1)   default 0   not null,
+    created_at date                     not null,
+    updated_at date                     null
 );
+
+
 
 -- # CREATE TABLE `weeks` (
 -- #                          `weeks_id`	VARCHAR(255)	NOT NULL AUTO_INCREMENT,
@@ -63,38 +89,6 @@ CREATE TABLE `dept` (
 -- #                                                            `weeks_id`
 -- #     );
 
-ALTER TABLE `member` ADD CONSTRAINT `FK_position_TO_member_1` FOREIGN KEY (
-                                                                           `position_id`
-    )
-    REFERENCES `position` (
-                           `id`
-        );
-
-ALTER TABLE `member` ADD CONSTRAINT `FK_dept_TO_member_1` FOREIGN KEY (
-                                                                       `dept_id`
-    )
-    REFERENCES `dept` (
-                       `id`
-        );
-
-ALTER TABLE `task` ADD CONSTRAINT `FK_member_TO_task_1` FOREIGN KEY (
-                                                                     `member_id`
-    )
-    REFERENCES `member` (
-                         `id`
-        );
-
-ALTER TABLE `comment` ADD CONSTRAINT `FK_member_TO_comment_1` FOREIGN KEY (
-                                                                           `member_id`
-    )
-    REFERENCES `member` (
-                         `id`
-        );
-
-ALTER TABLE `comment` ADD CONSTRAINT `FK_task_TO_comment_1` FOREIGN KEY (
-                                                                         `task_id`
-    )
-    REFERENCES `task` (
-                       `id`
-        );
-
+-- # CREATE TABLE `dining` (
+-- #
+-- # );
