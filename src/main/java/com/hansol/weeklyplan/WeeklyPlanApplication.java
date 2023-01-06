@@ -17,7 +17,6 @@ import org.springframework.retry.annotation.EnableRetry;
 //@EnableRedisHttpSession
 //@EnableConfigurationProperties(value = {SlackProperties.class})
 @EntityScan(basePackages = {"com.hansol.weeklyplan"})
-
 public class WeeklyPlanApplication {
 
 	public static void main(String[] args) {
